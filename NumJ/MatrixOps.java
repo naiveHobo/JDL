@@ -56,7 +56,7 @@ public class MatrixOps {
 		double time = (end-start)/1000000.0;
 
 		System.out.println();
-		System.out.println("Multiplication took " + time + " milliseconds.");
+		System.out.println("Matrix multiplication took " + time + " milliseconds.");
 
 		return result;
 	}
@@ -89,14 +89,17 @@ public class MatrixOps {
 		double time = (end-start)/1000000.0;
 
 		System.out.println();
-		System.out.println("Addition took " + time + " milliseconds.");
+		System.out.println("Matrix addition took " + time + " milliseconds.");
 
 		return result;
 	}
 
-	public float dotProduct() throws IncompatibleMatrixException{
+	public float dot() throws IncompatibleMatrixException{
 		if(matrix1.length!=matrix2.length || matrix1[0].length!=matrix2[0].length)
 			throw new IncompatibleMatrixException();
+
+		rows = matrix1.length;
+		cols = matrix1[0].length;
 
 		float dot = 0;
 		tempRow = new float[rows];
@@ -105,7 +108,7 @@ public class MatrixOps {
 		long start = System.nanoTime();
 
 		for(int i=0; i<rows; i++){
-			threadPool[i] = new Thread(new DotProductThread(i));
+			threadPool[i] = new Thread(new DotThread(i));
 			threadPool[i].start();
 		}
 
@@ -129,9 +132,9 @@ public class MatrixOps {
 		return dot;
 	}
 
-	public float sum() throws IncompatibleMatrixException{
-		if(matrix1.length!=matrix2.length || matrix1[0].length!=matrix2[0].length)
-			throw new IncompatibleMatrixException();
+	public float sum() {
+		rows = matrix1.length;
+		cols = matrix1[0].length;
 
 		float s = 0;
 		tempRow = new float[rows];
@@ -159,9 +162,87 @@ public class MatrixOps {
 		double time = (end-start)/1000000.0;
 
 		System.out.println("Sum: " + s);
-		System.out.println("Dot product took " + time + " milliseconds.");
+		System.out.println("Computation took " + time + " milliseconds.");
 
 		return s;
+	}
+
+	public float max() {
+		rows = matrix1.length;
+		cols = matrix1[0].length;
+
+		float m = -Float.MAX_VALUE;
+		tempRow = new float[rows];
+
+		threadPool = new Thread[rows];
+		long start = System.nanoTime();
+
+		for(int i=0; i<rows; i++){
+			threadPool[i] = new Thread(new MaxThread(i, true));
+			threadPool[i].start();
+		}
+		
+		for(int i=0; i<rows; i++){	
+			try{
+				threadPool[i].join();
+			}catch (InterruptedException e){
+				System.out.println(e);
+			}
+		}
+
+		for(int i=0;i<rows;i++){
+			if(tempRow[i]>m)
+				m = tempRow[i];
+		}
+
+		long end = System.nanoTime();
+		double time = (end-start)/1000000.0;
+
+		System.out.println("Max: " + m);
+		System.out.println("Computation took " + time + " milliseconds.");
+
+		return m;
+	}
+
+	public int[] argmax() {
+		rows = matrix1.length;
+		cols = matrix1[0].length;
+
+		float m = -Float.MAX_VALUE;
+		int[] pos = new int[2];
+		tempRow = new float[rows];
+
+		threadPool = new Thread[rows];
+		long start = System.nanoTime();
+
+		for(int i=0; i<rows; i++){
+			threadPool[i] = new Thread(new MaxThread(i, false));
+			threadPool[i].start();
+		}
+		
+		for(int i=0; i<rows; i++){	
+			try{
+				threadPool[i].join();
+			}catch (InterruptedException e){
+				System.out.println(e);
+			}
+		}
+
+		for(int i=0;i<rows;i++){
+			if(matrix1[i][(int)tempRow[i]]>m){
+				m = matrix1[i][(int)tempRow[i]];
+				pos[0] = i;
+				pos[1] = (int)tempRow[i];
+			}
+		}
+
+		long end = System.nanoTime();
+		double time = (end-start)/1000000.0;
+
+		System.out.println("(" + pos[0] + ", " + pos[1] + ")");
+		System.out.println("Computation took " + time + " milliseconds.");
+
+		return pos;
 	}
 
 	private class MultiplyThread implements Runnable {
@@ -211,21 +292,45 @@ public class MatrixOps {
 		}
 	}
 
-	private class DotProductThread implements Runnable {
+	private class MaxThread implements Runnable {
+		int index;
+		float max;
+		boolean arg;
+		int pos;
+
+		MaxThread(int index, boolean arg){
+			this.index = index;
+			max = Integer.MIN_VALUE;
+			this.arg = arg;
+		}
+
+		public void run(){
+			for(int i=0; i<cols; i++){
+				if(matrix1[index][i]>max){
+					max = matrix1[index][i];
+					pos = i;
+				}
+			}
+			if(arg)
+				tempRow[index] = max;
+			else
+				tempRow[index] = (float)pos;
+		}
+	}
+
+
+	private class DotThread implements Runnable {
 		int index;
 		float sum;
 
-		DotProductThread(int index){
+		DotThread(int index){
 			this.index = index;
 			sum = 0;
 		}
 
 		public void run(){
-			for(int i=0; i<cols; i++){
+			for(int i=0; i<cols; i++)
 				sum += matrix1[index][i] * matrix2[index][i];
-				System.out.print(sum + " ");
-			}
-			System.out.println();
 			tempRow[index] = sum;
 		}
 	}
