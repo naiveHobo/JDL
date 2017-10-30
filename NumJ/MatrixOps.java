@@ -14,23 +14,14 @@ public class MatrixOps {
 	private int cols;
 	private float[] tempRow;
 	private Thread[] threadPool;
+	
 
-	public MatrixOps(float[][] mat1, float[][] mat2) {
+	public float[][] multiply(float[][] mat1, float[][] mat2) throws IncompatibleMatrixException{
+		if(mat1[0].length!=mat2.length)
+			throw new IncompatibleMatrixException();
+
 		matrix1 = mat1;
 		matrix2 = mat2;
-	}
-
-	public MatrixOps(float[][] mat1) {
-		matrix1 = mat1;
-		matrix2 = mat1;
-		rows = matrix1.length;
-		cols = matrix1[0].length;
-		result = new float[rows][cols];
-	}
-
-	public float[][] multiply() throws IncompatibleMatrixException{
-		if(matrix1[0].length!=matrix2.length)
-			throw new IncompatibleMatrixException();
 
 		rows = matrix1.length;
 		cols = matrix2[0].length;
@@ -61,9 +52,12 @@ public class MatrixOps {
 		return result;
 	}
 
-	public float[][] add() throws IncompatibleMatrixException{
-		if(matrix1.length!=matrix2.length || matrix1[0].length!=matrix2[0].length)
+	public float[][] add(float[][] mat1, float[][] mat2) throws IncompatibleMatrixException{
+		if(mat1.length!=mat2.length || mat1[0].length!=mat2[0].length)
 			throw new IncompatibleMatrixException();
+
+		matrix1 = mat1;
+		matrix2 = mat2;
 
 		rows = matrix1.length;
 		cols = matrix1[0].length;
@@ -94,9 +88,12 @@ public class MatrixOps {
 		return result;
 	}
 
-	public float dot() throws IncompatibleMatrixException{
-		if(matrix1.length!=matrix2.length || matrix1[0].length!=matrix2[0].length)
+	public float dot(float[][] mat1, float[][] mat2) throws IncompatibleMatrixException{
+		if(mat1.length!=mat2.length || mat1[0].length!=mat2[0].length)
 			throw new IncompatibleMatrixException();
+
+		matrix1 = mat1;
+		matrix2 = mat2;
 
 		rows = matrix1.length;
 		cols = matrix1[0].length;
@@ -132,7 +129,9 @@ public class MatrixOps {
 		return dot;
 	}
 
-	public float sum() {
+	public float sum(float[][] mat) {
+		matrix1 = mat;
+
 		rows = matrix1.length;
 		cols = matrix1[0].length;
 
@@ -167,7 +166,9 @@ public class MatrixOps {
 		return s;
 	}
 
-	public float max() {
+	public float max(float[][] mat) {
+		matrix1 = mat;
+
 		rows = matrix1.length;
 		cols = matrix1[0].length;
 
@@ -204,7 +205,9 @@ public class MatrixOps {
 		return m;
 	}
 
-	public int[] argmax() {
+	public int[] argmax(float[][] mat) {
+		matrix1 = mat;
+
 		rows = matrix1.length;
 		cols = matrix1[0].length;
 
@@ -243,6 +246,43 @@ public class MatrixOps {
 		System.out.println("Computation took " + time + " milliseconds.");
 
 		return pos;
+	}
+
+	public float[][] exp(float[][] mat) {
+		matrix1 = mat;
+
+		rows = matrix1.length;
+		cols = matrix1[0].length;
+
+		threadPool = new Thread[rows];
+		long start = System.nanoTime();
+
+		for(int i=0; i<rows; i++){
+			threadPool[i] = new Thread(new ExpThread(i));
+			threadPool[i].start();
+		}
+
+		for(int i=0; i<rows; i++){
+			try{
+				threadPool[i].join();
+			}catch(InterruptedException e){
+				System.out.println(e);
+			}
+		}
+
+		long end = System.nanoTime();
+		double time = (end-start)/1000000.0;
+
+		return result;
+	}
+
+	public float[][] identity(int x, int y){
+		float[][] id = new float[x][y];
+		for(int i=0; i<x; i++) {
+			for(int j=0; j<y; j++)
+				id[i][j] = 1.0f;
+		}
+		return id;
 	}
 
 	private class MultiplyThread implements Runnable {
@@ -318,7 +358,6 @@ public class MatrixOps {
 		}
 	}
 
-
 	private class DotThread implements Runnable {
 		int index;
 		float sum;
@@ -332,6 +371,20 @@ public class MatrixOps {
 			for(int i=0; i<cols; i++)
 				sum += matrix1[index][i] * matrix2[index][i];
 			tempRow[index] = sum;
+		}
+	}
+
+	private class ExpThread implements Runnable {
+		int index;
+
+		ExpThread(int index){
+			this.index = index;
+		}
+
+		public void run(){
+			for(int i=0; i<cols; i++){
+				result[index][i] = (float) Math.exp(matrix1[index][i]);
+			}
 		}
 	}
 }
