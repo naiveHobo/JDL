@@ -511,10 +511,123 @@ public class MatrixOps {
 		return result;
 	}
 
-	public float[][] identity(int x, int y){
+	public float[][] transpose(float[][] mat) {
+		matrix1 = mat;
+
+		rows = matrix1.length;
+		cols = matrix1[0].length;
+
+		result = new float[cols][rows];
+
+		threadPool = new Thread[rows];
+		long start = System.nanoTime();
+
+		for(int i=0; i<rows; i++){
+			threadPool[i] = new Thread(new MatWithScalarThread(i, 5, 0));
+			threadPool[i].start();
+		}
+
+		for(int i=0; i<rows; i++){
+			try{
+				threadPool[i].join();
+			}catch(InterruptedException e){
+				System.out.println(e);
+			}
+		}
+
+		long end = System.nanoTime();
+		double time = (end-start)/1000000.0;
+
+		System.out.println("Computation took " + time + " milliseconds.");
+
+		return result;
+	}
+
+	public float[][] neg(float[][] mat) {
+		matrix1 = mat;
+
+		rows = matrix1.length;
+		cols = matrix1[0].length;
+
+		result = new float[rows][cols];
+
+		threadPool = new Thread[rows];
+		long start = System.nanoTime();
+
+		for(int i=0; i<rows; i++){
+			threadPool[i] = new Thread(new MatWithScalarThread(i, 6, 0));
+			threadPool[i].start();
+		}
+
+		for(int i=0; i<rows; i++){
+			try{
+				threadPool[i].join();
+			}catch(InterruptedException e){
+				System.out.println(e);
+			}
+		}
+
+		long end = System.nanoTime();
+		double time = (end-start)/1000000.0;
+
+		System.out.println("Computation took " + time + " milliseconds.");
+
+		return result;
+	}
+
+	public float[][] reciprocal(float[][] mat) {
+		matrix1 = mat;
+
+		rows = matrix1.length;
+		cols = matrix1[0].length;
+
+		result = new float[rows][cols];
+
+		threadPool = new Thread[rows];
+		long start = System.nanoTime();
+
+		for(int i=0; i<rows; i++){
+			threadPool[i] = new Thread(new MatWithScalarThread(i, 7, 0));
+			threadPool[i].start();
+		}
+
+		for(int i=0; i<rows; i++){
+			try{
+				threadPool[i].join();
+			}catch(InterruptedException e){
+				System.out.println(e);
+			}
+		}
+
+		long end = System.nanoTime();
+		double time = (end-start)/1000000.0;
+
+		System.out.println("Computation took " + time + " milliseconds.");
+
+		return result;
+	}
+
+	public float[][] identity(int size){
+		float[][] id = new float[size][size];
+		for(int i=0; i<size; i++) {
+			id[i][i] = 1.0f;
+		}
+		return id;
+	}
+
+	public float[][] ones(int x, int y){
 		float[][] id = new float[x][y];
 		for(int i=0; i<x; i++) {
 			for(int j=0; j<y; j++)
+				id[i][j] = 1.0f;
+		}
+		return id;
+	}
+
+	public float[][] ones(int size){
+		float[][] id = new float[size][size];
+		for(int i=0; i<size; i++) {
+			for(int j=0; j<size; j++)
 				id[i][j] = 1.0f;
 		}
 		return id;
@@ -592,8 +705,14 @@ public class MatrixOps {
 					result[index][i] = matrix1[index][i] / scalar;
 				else if(type==3)
 					result[index][i] = matrix1[index][i] + scalar;
-				else
+				else if(type==4)
 					result[index][i] = matrix1[index][i] - scalar;
+				else if(type==5)
+					result[i][index] = matrix1[index][i];
+				else if(type==6)
+					result[index][i] = -matrix1[index][i];
+				else
+					result[index][i] = 1/matrix1[index][i];
 			}
 		}
 	}
