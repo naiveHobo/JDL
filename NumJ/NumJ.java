@@ -16,7 +16,7 @@ public class NumJ {
 	private static Thread[] threadPool;
 	
 
-	public static float[][] matmul(float[][] mat1, float[][] mat2) throws IncompatibleMatrixException{
+	public static float[][] dot(float[][] mat1, float[][] mat2) throws IncompatibleMatrixException{
 		if(mat1[0].length!=mat2.length)
 			throw new IncompatibleMatrixException();
 
@@ -51,6 +51,10 @@ public class NumJ {
 		return result;
 	}
 
+
+
+	// Matrix-Matrix operations
+
 	public static float[][] add(float[][] mat1, float[][] mat2) throws IncompatibleMatrixException{
 		if(mat1.length!=mat2.length || mat1[0].length!=mat2[0].length)
 			throw new IncompatibleMatrixException();
@@ -76,65 +80,6 @@ public class NumJ {
 			}catch (InterruptedException e){
 				// System.out.println(e);
 			} 
-		}
-
-		// long end = System.nanoTime();
-		// double time = (end-start)/1000000.0;
-
-		// System.out.println("Computation took " + time + " milliseconds.");
-
-		return result;
-	}
-
-	public static float[][] add(float[][] mat1, float[] mat2) throws IncompatibleMatrixException{
-		if(mat1.length!=mat2.length && mat1[0].length!=mat2.length)
-			throw new IncompatibleMatrixException();
-
-		matrix1 = mat1;
-
-		rows = matrix1.length;
-		cols = matrix1[0].length;
-		result = new float[rows][cols];
-
-		if(mat2.length==cols){
-			matrix2 = new float[rows][cols];
-			for(int i=0;i<rows;i++)
-				matrix2[i] = mat2;
-		}
-		else{
-			matrix2 = new float[cols][rows];
-			for(int i=0;i<cols;i++)
-				matrix2[i] = mat2;
-			matrix2 = transpose(matrix2);
-		}
-
-		result = add(matrix1, matrix2);
-
-		return result;
-	}
-
-	public static float[][] add(float[][] mat, float sclr) {
-		matrix1 = mat;
-
-		rows = matrix1.length;
-		cols = matrix1[0].length;
-
-		result = new float[rows][cols];
-
-		threadPool = new Thread[rows];
-		// long start = System.nanoTime();
-
-		for(int i=0; i<rows; i++){
-			threadPool[i] = new Thread(new MatWithScalarThread(i, 3, sclr));
-			threadPool[i].start();
-		}
-
-		for(int i=0; i<rows; i++){
-			try{
-				threadPool[i].join();
-			}catch(InterruptedException e){
-				// System.out.println(e);
-			}
 		}
 
 		// long end = System.nanoTime();
@@ -180,65 +125,6 @@ public class NumJ {
 		return result;
 	}
 
-	public static float[][] mul(float[][] mat1, float[] mat2) throws IncompatibleMatrixException{
-		if(mat1.length!=mat2.length && mat1[0].length!=mat2.length)
-			throw new IncompatibleMatrixException();
-
-		matrix1 = mat1;
-
-		rows = matrix1.length;
-		cols = matrix1[0].length;
-		result = new float[rows][cols];
-
-		if(mat2.length==cols){
-			matrix2 = new float[rows][cols];
-			for(int i=0;i<rows;i++)
-				matrix2[i] = mat2;
-		}
-		else{
-			matrix2 = new float[cols][rows];
-			for(int i=0;i<cols;i++)
-				matrix2[i] = mat2;
-			matrix2 = transpose(matrix2);
-		}
-
-		result = mul(matrix1, matrix2);
-
-		return result;
-	}
-
-	public static float[][] mul(float[][] mat, float sclr) {
-		matrix1 = mat;
-
-		rows = matrix1.length;
-		cols = matrix1[0].length;
-
-		result = new float[rows][cols];
-
-		threadPool = new Thread[rows];
-		// long start = System.nanoTime();
-
-		for(int i=0; i<rows; i++){
-			threadPool[i] = new Thread(new MatWithScalarThread(i, 1, sclr));
-			threadPool[i].start();
-		}
-
-		for(int i=0; i<rows; i++){
-			try{
-				threadPool[i].join();
-			}catch(InterruptedException e){
-				// System.out.println(e);
-			}
-		}
-
-		// long end = System.nanoTime();
-		// double time = (end-start)/1000000.0;
-
-		// System.out.println("Computation took " + time + " milliseconds.");
-
-		return result;
-	}
-
 	public static float[][] div(float[][] mat1, float[][] mat2) throws IncompatibleMatrixException{
 		if(mat1.length!=mat2.length || mat1[0].length!=mat2[0].length)
 			throw new IncompatibleMatrixException();
@@ -264,65 +150,6 @@ public class NumJ {
 			}catch (InterruptedException e){
 				// System.out.println(e);
 			} 
-		}
-
-		// long end = System.nanoTime();
-		// double time = (end-start)/1000000.0;
-
-		// System.out.println("Computation took " + time + " milliseconds.");
-
-		return result;
-	}
-
-	public static float[][] div(float[][] mat1, float[] mat2) throws IncompatibleMatrixException{
-		if(mat1.length!=mat2.length && mat1[0].length!=mat2.length)
-			throw new IncompatibleMatrixException();
-
-		matrix1 = mat1;
-
-		rows = matrix1.length;
-		cols = matrix1[0].length;
-		result = new float[rows][cols];
-
-		if(mat2.length==cols){
-			matrix2 = new float[rows][cols];
-			for(int i=0;i<rows;i++)
-				matrix2[i] = mat2;
-		}
-		else{
-			matrix2 = new float[cols][rows];
-			for(int i=0;i<cols;i++)
-				matrix2[i] = mat2;
-			matrix2 = transpose(matrix2);
-		}
-
-		result = div(matrix1, matrix2);
-
-		return result;
-	}
-
-	public static float[][] div(float[][] mat, float sclr) {
-		matrix1 = mat;
-
-		rows = matrix1.length;
-		cols = matrix1[0].length;
-
-		result = new float[rows][cols];
-
-		threadPool = new Thread[rows];
-		// long start = System.nanoTime();
-
-		for(int i=0; i<rows; i++){
-			threadPool[i] = new Thread(new MatWithScalarThread(i, 2, sclr));
-			threadPool[i].start();
-		}
-
-		for(int i=0; i<rows; i++){
-			try{
-				threadPool[i].join();
-			}catch(InterruptedException e){
-				// System.out.println(e);
-			}
 		}
 
 		// long end = System.nanoTime();
@@ -368,66 +195,7 @@ public class NumJ {
 		return result;
 	}
 
-	public static float[][] sub(float[][] mat1, float[] mat2) throws IncompatibleMatrixException{
-		if(mat1.length!=mat2.length && mat1[0].length!=mat2.length)
-			throw new IncompatibleMatrixException();
-
-		matrix1 = mat1;
-
-		rows = matrix1.length;
-		cols = matrix1[0].length;
-		result = new float[rows][cols];
-
-		if(mat2.length==cols){
-			matrix2 = new float[rows][cols];
-			for(int i=0;i<rows;i++)
-				matrix2[i] = mat2;
-		}
-		else{
-			matrix2 = new float[cols][rows];
-			for(int i=0;i<cols;i++)
-				matrix2[i] = mat2;
-			matrix2 = transpose(matrix2);
-		}
-
-		result = sub(matrix1, matrix2);
-
-		return result;
-	}
-
-	public static float[][] sub(float[][] mat, float sclr) {
-		matrix1 = mat;
-
-		rows = matrix1.length;
-		cols = matrix1[0].length;
-		
-		result = new float[rows][cols];
-
-		threadPool = new Thread[rows];
-		// long start = System.nanoTime();
-
-		for(int i=0; i<rows; i++){
-			threadPool[i] = new Thread(new MatWithScalarThread(i, 4, sclr));
-			threadPool[i].start();
-		}
-
-		for(int i=0; i<rows; i++){
-			try{
-				threadPool[i].join();
-			}catch(InterruptedException e){
-				// System.out.println(e);
-			}
-		}
-
-		// long end = System.nanoTime();
-		// double time = (end-start)/1000000.0;
-
-		// System.out.println("Computation took " + time + " milliseconds.");
-
-		return result;
-	}
-
-	public static float dot(float[][] mat1, float[][] mat2) throws IncompatibleMatrixException{
+	public static float dotProduct(float[][] mat1, float[][] mat2) throws IncompatibleMatrixException{
 		if(mat1.length!=mat2.length || mat1[0].length!=mat2[0].length)
 			throw new IncompatibleMatrixException();
 
@@ -468,6 +236,258 @@ public class NumJ {
 		return dot;
 	}
 
+
+
+	// Matrix-Vector operations
+
+	public static float[][] add(float[][] mat1, float[] mat2) throws IncompatibleMatrixException{
+		if(mat1.length!=mat2.length && mat1[0].length!=mat2.length)
+			throw new IncompatibleMatrixException();
+
+		matrix1 = mat1;
+
+		rows = matrix1.length;
+		cols = matrix1[0].length;
+		result = new float[rows][cols];
+
+		if(mat2.length==cols){
+			matrix2 = new float[rows][cols];
+			for(int i=0;i<rows;i++)
+				matrix2[i] = mat2;
+		}
+		else{
+			matrix2 = new float[cols][rows];
+			for(int i=0;i<cols;i++)
+				matrix2[i] = mat2;
+			matrix2 = transpose(matrix2);
+		}
+
+		matrix1 = mat1;
+		result = add(matrix1, matrix2);
+
+		return result;
+	}
+
+	public static float[][] mul(float[][] mat1, float[] mat2) throws IncompatibleMatrixException{
+		if(mat1.length!=mat2.length && mat1[0].length!=mat2.length)
+			throw new IncompatibleMatrixException();
+
+		matrix1 = mat1;
+
+		rows = matrix1.length;
+		cols = matrix1[0].length;
+		result = new float[rows][cols];
+
+		if(mat2.length==rows){
+			matrix2 = new float[cols][rows];
+			for(int i=0;i<cols;i++)
+				matrix2[i] = mat2;
+			matrix2 = transpose(matrix2);
+		}
+		else{
+			matrix2 = new float[rows][cols];
+			for(int i=0;i<rows;i++)
+				matrix2[i] = mat2;
+		}
+
+		matrix1 = mat1;
+		result = mul(matrix1, matrix2);
+
+		return result;
+	}
+
+	public static float[][] div(float[][] mat1, float[] mat2) throws IncompatibleMatrixException{
+		if(mat1.length!=mat2.length && mat1[0].length!=mat2.length)
+			throw new IncompatibleMatrixException();
+
+		matrix1 = mat1;
+
+		rows = matrix1.length;
+		cols = matrix1[0].length;
+		result = new float[rows][cols];
+
+		if(mat2.length==rows){
+			matrix2 = new float[cols][rows];
+			for(int i=0;i<cols;i++)
+				matrix2[i] = mat2;
+			matrix2 = transpose(matrix2);
+		}
+		else{
+			matrix2 = new float[rows][cols];
+			for(int i=0;i<rows;i++)
+				matrix2[i] = mat2;
+		}
+
+		matrix1 = mat1;
+		result = div(matrix1, matrix2);
+
+		return result;
+	}
+
+	public static float[][] sub(float[][] mat1, float[] mat2) throws IncompatibleMatrixException{
+		if(mat1.length!=mat2.length && mat1[0].length!=mat2.length)
+			throw new IncompatibleMatrixException();
+
+		matrix1 = mat1;
+
+		rows = matrix1.length;
+		cols = matrix1[0].length;
+		result = new float[rows][cols];
+
+		if(mat2.length==cols){
+			matrix2 = new float[rows][cols];
+			for(int i=0;i<rows;i++)
+				matrix2[i] = mat2;
+		}
+		else{
+			matrix2 = new float[cols][rows];
+			for(int i=0;i<cols;i++)
+				matrix2[i] = mat2;
+			matrix2 = transpose(matrix2);
+		}
+
+		matrix1 = mat1;
+		result = sub(matrix1, matrix2);
+
+		return result;
+	}
+
+
+
+	// Matrix-Scalar operations
+
+	public static float[][] add(float[][] mat, float sclr) {
+		matrix1 = mat;
+
+		rows = matrix1.length;
+		cols = matrix1[0].length;
+
+		result = new float[rows][cols];
+
+		threadPool = new Thread[rows];
+		// long start = System.nanoTime();
+
+		for(int i=0; i<rows; i++){
+			threadPool[i] = new Thread(new MatWithScalarThread(i, 3, sclr));
+			threadPool[i].start();
+		}
+
+		for(int i=0; i<rows; i++){
+			try{
+				threadPool[i].join();
+			}catch(InterruptedException e){
+				// System.out.println(e);
+			}
+		}
+
+		// long end = System.nanoTime();
+		// double time = (end-start)/1000000.0;
+
+		// System.out.println("Computation took " + time + " milliseconds.");
+
+		return result;
+	}
+
+	public static float[][] mul(float[][] mat, float sclr) {
+		matrix1 = mat;
+
+		rows = matrix1.length;
+		cols = matrix1[0].length;
+
+		result = new float[rows][cols];
+
+		threadPool = new Thread[rows];
+		// long start = System.nanoTime();
+
+		for(int i=0; i<rows; i++){
+			threadPool[i] = new Thread(new MatWithScalarThread(i, 1, sclr));
+			threadPool[i].start();
+		}
+
+		for(int i=0; i<rows; i++){
+			try{
+				threadPool[i].join();
+			}catch(InterruptedException e){
+				// System.out.println(e);
+			}
+		}
+
+		// long end = System.nanoTime();
+		// double time = (end-start)/1000000.0;
+
+		// System.out.println("Computation took " + time + " milliseconds.");
+
+		return result;
+	}
+
+	public static float[][] div(float[][] mat, float sclr) {
+		matrix1 = mat;
+
+		rows = matrix1.length;
+		cols = matrix1[0].length;
+
+		result = new float[rows][cols];
+
+		threadPool = new Thread[rows];
+		// long start = System.nanoTime();
+
+		for(int i=0; i<rows; i++){
+			threadPool[i] = new Thread(new MatWithScalarThread(i, 2, sclr));
+			threadPool[i].start();
+		}
+
+		for(int i=0; i<rows; i++){
+			try{
+				threadPool[i].join();
+			}catch(InterruptedException e){
+				// System.out.println(e);
+			}
+		}
+
+		// long end = System.nanoTime();
+		// double time = (end-start)/1000000.0;
+
+		// System.out.println("Computation took " + time + " milliseconds.");
+
+		return result;
+	}
+
+	public static float[][] sub(float[][] mat, float sclr) {
+		matrix1 = mat;
+
+		rows = matrix1.length;
+		cols = matrix1[0].length;
+		
+		result = new float[rows][cols];
+
+		threadPool = new Thread[rows];
+		// long start = System.nanoTime();
+
+		for(int i=0; i<rows; i++){
+			threadPool[i] = new Thread(new MatWithScalarThread(i, 4, sclr));
+			threadPool[i].start();
+		}
+
+		for(int i=0; i<rows; i++){
+			try{
+				threadPool[i].join();
+			}catch(InterruptedException e){
+				// System.out.println(e);
+			}
+		}
+
+		// long end = System.nanoTime();
+		// double time = (end-start)/1000000.0;
+
+		// System.out.println("Computation took " + time + " milliseconds.");
+
+		return result;
+	}
+
+	
+
+	// Scalar output operations
+
 	public static float sum(float[][] mat) {
 		matrix1 = mat;
 
@@ -503,6 +523,56 @@ public class NumJ {
 		// System.out.println("Computation took " + time + " milliseconds.");
 
 		return s;
+	}
+
+	public static float[] sum(float[][] mat, int axis) {
+		if(axis==1)
+			matrix1 = mat;
+		else if(axis==0)
+			matrix1 = transpose(mat);
+
+		rows = matrix1.length;
+		cols = matrix1[0].length;
+
+		tempRow = new float[rows];
+
+		threadPool = new Thread[rows];
+		// long start = System.nanoTime();
+
+		for(int i=0; i<rows; i++){
+			threadPool[i] = new Thread(new ScalarThread(i, 0));
+			threadPool[i].start();
+		}
+		
+		for(int i=0; i<rows; i++){	
+			try{
+				threadPool[i].join();
+			}catch (InterruptedException e){
+				// System.out.println(e);
+			}
+		}
+
+		// long end = System.nanoTime();
+		// double time = (end-start)/1000000.0;
+
+		// System.out.println("Sum: " + s);
+		// System.out.println("Computation took " + time + " milliseconds.");
+
+		return tempRow;
+	}
+
+	public static float avg(float[][] mat) {
+		float av = sum(mat);
+		av /= (mat.length * mat[0].length);
+		return av;
+	}
+
+	public static float[] avg(float[][] mat, int axis) {
+		float[] temp = sum(mat, axis);
+		int n = axis==0 ? mat.length : mat[0].length;
+		for(int i=0;i<temp.length;i++)
+			temp[i] /= n;
+		return temp;
 	}
 
 	public static float max(float[][] mat) {
@@ -587,6 +657,10 @@ public class NumJ {
 		return pos;
 	}
 
+
+
+	// Single matrix operations
+
 	public static float[][] exp(float[][] mat) {
 		matrix1 = mat;
 
@@ -617,6 +691,13 @@ public class NumJ {
 		// System.out.println("Computation took " + time + " milliseconds.");
 
 		return result;
+	}
+
+	public static float[] exp(float[] mat) {
+		float[] temp = new float[mat.length];
+		for(int i=0;i<mat.length;i++)
+			temp[i] = (float) Math.exp(mat[i]);
+		return temp;
 	}
 
 	public static float[][] transpose(float[][] mat) {
@@ -753,34 +834,11 @@ public class NumJ {
 		return result;
 	}
 
-	public static float[][] ones(int size){
-		rows = size;
-		cols = size;
-
-		result = new float[rows][cols];
-
-		threadPool = new Thread[rows];
-		// long start = System.nanoTime();
-
-		for(int i=0; i<rows; i++){
-			threadPool[i] = new Thread(new MatWithScalarThread(i, 8, 0));
-			threadPool[i].start();
-		}
-
-		for(int i=0; i<rows; i++){
-			try{
-				threadPool[i].join();
-			}catch(InterruptedException e){
-				// System.out.println(e);
-			}
-		}
-
-		// long end = System.nanoTime();
-		// double time = (end-start)/1000000.0;
-
-		// System.out.println("Computation took " + time + " milliseconds.");
-
-		return result;
+	public static float[] ones(int size){
+		float[] temp = new float[size];
+		for(int i=0;i<size;i++)
+			temp[i] = 1.0f;
+		return temp;
 	}
 
 	public static float[][] zeros(int x, int y){
@@ -792,13 +850,8 @@ public class NumJ {
 		return result;
 	}
 
-	public static float[][] zeros(int size){
-		rows = 1;
-		cols = size;
-
-		result = new float[rows][cols];
-
-		return result;
+	public static float[] zeros(int size){
+		return (new float[size]);
 	}
 
 	public static float[][] rand(int x, int y){
@@ -831,48 +884,81 @@ public class NumJ {
 		return result;
 	}
 
-	public static float[][] rand(int size){
-		rows = size;
-		cols = size;
-
-		result = new float[rows][cols];
-
-		threadPool = new Thread[rows];
-		// long start = System.nanoTime();
-
-		for(int i=0; i<rows; i++){
-			threadPool[i] = new Thread(new MatWithScalarThread(i, 9, 0));
-			threadPool[i].start();
-		}
-
-		for(int i=0; i<rows; i++){
-			try{
-				threadPool[i].join();
-			}catch(InterruptedException e){
-				// System.out.println(e);
-			}
-		}
-
-		// long end = System.nanoTime();
-		// double time = (end-start)/1000000.0;
-
-		// System.out.println("Computation took " + time + " milliseconds.");
-
-		return result;
+	public static float[] rand(int size){
+		float[] temp = new float[size];
+		for(int i=0;i<size;i++)
+			temp[i] = ((float) Math.random() * 2.0f) - 1.0f;
+		return temp;
 	}
 
-	public static float[][] flatten(float[][] mat) {
-		rows = 1;
+	public static float[] flatten(float[][] mat) {
 		cols = mat.length * mat[0].length;
 
-		result = new float[rows][cols];
-
+		float[] temp = new float[cols];
+		int cnt = 0;
 		for(int i=0;i<mat.length;i++){
 			for(int j=0;j<mat[0].length;j++)
-				result[0][mat[0].length*i + j] = mat[i][j];
+				temp[cnt++] = mat[i][j];
 		}
 
-		return result;
+		return temp;
+	}
+
+	public static float[][] reshape(float[][] mat, int[] newshape) {
+		if(newshape.length!=2)
+			return mat;
+		int[] curshape = shape(mat);
+		if(curshape[0]*curshape[1]!=newshape[0]*newshape[1])
+			return mat;
+
+		float[][] out = new float[newshape[0]][newshape[1]];
+		float[] temp = flatten(mat);
+		int cnt = 0;
+		for(int i=0;i<newshape[0];i++){
+			for(int j=0;j<newshape[1];j++)
+				out[i][j] = temp[cnt++];
+		}
+		return out;
+	}
+
+	public static float[][] reshape(float[][] mat, int newshapex, int newshapey) {
+		int[] newshape = {newshapex, newshapey};
+		return reshape(mat, newshape);
+	}
+
+	public static float[] reshape(float[][] mat, int newshape) throws IncompatibleMatrixException {
+		if(mat.length*mat[0].length!=newshape)
+			throw new IncompatibleMatrixException();
+		float[] temp = new float[newshape];
+		int cnt = 0;
+		for(int i=0;i<mat.length;i++){
+			for(int j=0;j<mat[0].length;j++)
+				temp[cnt++] = mat[i][j];
+		}
+		return temp;
+	}
+
+	public static int[] shape(float[][] mat) {
+		int[] s = new int[2];
+		s[0] = mat.length;
+		s[1] = mat[0].length;
+		return s;
+	}
+
+	public static void display(float[][] mat) {
+		for(int i=0;i<mat.length;i++){
+			for(int j=0;j<mat[0].length;j++)
+				System.out.print(mat[i][j] + " ");
+			System.out.println();
+		}
+		System.out.println();
+	}
+
+	public static void display(float[] mat) {
+		for(int i=0;i<mat.length;i++)
+			System.out.print(mat[i] + " ");
+		System.out.println();
+		System.out.println();
 	}
 
 	private static class MultiplyThread implements Runnable {
