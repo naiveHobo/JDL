@@ -56,11 +56,40 @@ public class NumJ {
 	// Matrix-Matrix operations
 
 	public static float[][] add(float[][] mat1, float[][] mat2) throws IncompatibleMatrixException{
-		if(mat1.length!=mat2.length || mat1[0].length!=mat2[0].length)
+		if(mat1.length==1 && mat1[0].length==mat2[0].length){
+			matrix2 = mat2;
+			matrix1 = new float[mat2.length][mat2[0].length];
+			for(int i=0;i<mat2.length;i++)
+				matrix1[i] = mat1[0];
+		}
+		else if(mat2.length==1 && mat1[0].length==mat2[0].length){
+			matrix1 = mat1;
+			matrix2 = new float[mat1.length][mat1[0].length];
+			for(int i=0;i<mat1.length;i++)
+				matrix2[i] = mat2[0];
+		}
+		else if(mat1[0].length==1 && mat1.length==mat2.length){
+			matrix2 = mat2;
+			matrix1 = new float[mat2.length][mat2[0].length];
+			for(int i=0;i<mat2.length;i++){
+				for(int j=0;j<mat2[0].length;j++)
+					matrix1[i][j] = mat1[i][0];
+			}
+		}
+		else if(mat2[0].length==1 && mat1.length==mat2.length){
+			matrix1 = mat1;
+			matrix2 = new float[mat1.length][mat1[0].length];
+			for(int i=0;i<mat1.length;i++){
+				for(int j=0;j<mat1[0].length;j++)
+					matrix2[i][j] = mat2[i][0];
+			}
+		}
+		else if(mat1.length!=mat2.length || mat1[0].length!=mat2[0].length)
 			throw new IncompatibleMatrixException();
-
-		matrix1 = mat1;
-		matrix2 = mat2;
+		else{
+			matrix1 = mat1;
+			matrix2 = mat2;
+		}
 
 		rows = matrix1.length;
 		cols = matrix1[0].length;
@@ -91,11 +120,40 @@ public class NumJ {
 	}
 
 	public static float[][] mul(float[][] mat1, float[][] mat2) throws IncompatibleMatrixException{
-		if(mat1.length!=mat2.length || mat1[0].length!=mat2[0].length)
+		if(mat1.length==1 && mat1[0].length==mat2[0].length){
+			matrix2 = mat2;
+			matrix1 = new float[mat2.length][mat2[0].length];
+			for(int i=0;i<mat2.length;i++)
+				matrix1[i] = mat1[0];
+		}
+		else if(mat2.length==1 && mat1[0].length==mat2[0].length){
+			matrix1 = mat1;
+			matrix2 = new float[mat1.length][mat1[0].length];
+			for(int i=0;i<mat1.length;i++)
+				matrix2[i] = mat2[0];
+		}
+		else if(mat1[0].length==1 && mat1.length==mat2.length){
+			matrix2 = mat2;
+			matrix1 = new float[mat2.length][mat2[0].length];
+			for(int i=0;i<mat2.length;i++){
+				for(int j=0;j<mat2[0].length;j++)
+					matrix1[i][j] = mat1[i][0];
+			}
+		}
+		else if(mat2[0].length==1 && mat1.length==mat2.length){
+			matrix1 = mat1;
+			matrix2 = new float[mat1.length][mat1[0].length];
+			for(int i=0;i<mat1.length;i++){
+				for(int j=0;j<mat1[0].length;j++)
+					matrix2[i][j] = mat2[i][0];
+			}
+		}
+		else if(mat1.length!=mat2.length || mat1[0].length!=mat2[0].length)
 			throw new IncompatibleMatrixException();
-
-		matrix1 = mat1;
-		matrix2 = mat2;
+		else{
+			matrix1 = mat1;
+			matrix2 = mat2;
+		}
 
 		rows = matrix1.length;
 		cols = matrix1[0].length;
@@ -126,11 +184,40 @@ public class NumJ {
 	}
 
 	public static float[][] div(float[][] mat1, float[][] mat2) throws IncompatibleMatrixException{
-		if(mat1.length!=mat2.length || mat1[0].length!=mat2[0].length)
+		if(mat1.length==1 && mat1[0].length==mat2[0].length){
+			matrix2 = mat2;
+			matrix1 = new float[mat2.length][mat2[0].length];
+			for(int i=0;i<mat2.length;i++)
+				matrix1[i] = mat1[0];
+		}
+		else if(mat2.length==1 && mat1[0].length==mat2[0].length){
+			matrix1 = mat1;
+			matrix2 = new float[mat1.length][mat1[0].length];
+			for(int i=0;i<mat1.length;i++)
+				matrix2[i] = mat2[0];
+		}
+		else if(mat1[0].length==1 && mat1.length==mat2.length){
+			matrix2 = mat2;
+			matrix1 = new float[mat2.length][mat2[0].length];
+			for(int i=0;i<mat2.length;i++){
+				for(int j=0;j<mat2[0].length;j++)
+					matrix1[i][j] = mat1[i][0];
+			}
+		}
+		else if(mat2[0].length==1 && mat1.length==mat2.length){
+			matrix1 = mat1;
+			matrix2 = new float[mat1.length][mat1[0].length];
+			for(int i=0;i<mat1.length;i++){
+				for(int j=0;j<mat1[0].length;j++)
+					matrix2[i][j] = mat2[i][0];
+			}
+		}
+		else if(mat1.length!=mat2.length || mat1[0].length!=mat2[0].length)
 			throw new IncompatibleMatrixException();
-
-		matrix1 = mat1;
-		matrix2 = mat2;
+		else{
+			matrix1 = mat1;
+			matrix2 = mat2;
+		}
 
 		rows = matrix1.length;
 		cols = matrix1[0].length;
@@ -161,11 +248,40 @@ public class NumJ {
 	}
 
 	public static float[][] sub(float[][] mat1, float[][] mat2) throws IncompatibleMatrixException{
-		if(mat1.length!=mat2.length || mat1[0].length!=mat2[0].length)
+		if(mat1.length==1 && mat1[0].length==mat2[0].length){
+			matrix2 = mat2;
+			matrix1 = new float[mat2.length][mat2[0].length];
+			for(int i=0;i<mat2.length;i++)
+				matrix1[i] = mat1[0];
+		}
+		else if(mat2.length==1 && mat1[0].length==mat2[0].length){
+			matrix1 = mat1;
+			matrix2 = new float[mat1.length][mat1[0].length];
+			for(int i=0;i<mat1.length;i++)
+				matrix2[i] = mat2[0];
+		}
+		else if(mat1[0].length==1 && mat1.length==mat2.length){
+			matrix2 = mat2;
+			matrix1 = new float[mat2.length][mat2[0].length];
+			for(int i=0;i<mat2.length;i++){
+				for(int j=0;j<mat2[0].length;j++)
+					matrix1[i][j] = mat1[i][0];
+			}
+		}
+		else if(mat2[0].length==1 && mat1.length==mat2.length){
+			matrix1 = mat1;
+			matrix2 = new float[mat1.length][mat1[0].length];
+			for(int i=0;i<mat1.length;i++){
+				for(int j=0;j<mat1[0].length;j++)
+					matrix2[i][j] = mat2[i][0];
+			}
+		}
+		else if(mat1.length!=mat2.length || mat1[0].length!=mat2[0].length)
 			throw new IncompatibleMatrixException();
-
-		matrix1 = mat1;
-		matrix2 = mat2;
+		else{
+			matrix1 = mat1;
+			matrix2 = mat2;
+		}
 
 		rows = matrix1.length;
 		cols = matrix1[0].length;
@@ -196,11 +312,40 @@ public class NumJ {
 	}
 
 	public static float dotProduct(float[][] mat1, float[][] mat2) throws IncompatibleMatrixException{
-		if(mat1.length!=mat2.length || mat1[0].length!=mat2[0].length)
+		if(mat1.length==1 && mat1[0].length==mat2[0].length){
+			matrix2 = mat2;
+			matrix1 = new float[mat2.length][mat2[0].length];
+			for(int i=0;i<mat2.length;i++)
+				matrix1[i] = mat1[0];
+		}
+		else if(mat2.length==1 && mat1[0].length==mat2[0].length){
+			matrix1 = mat1;
+			matrix2 = new float[mat1.length][mat1[0].length];
+			for(int i=0;i<mat1.length;i++)
+				matrix2[i] = mat2[0];
+		}
+		else if(mat1[0].length==1 && mat1.length==mat2.length){
+			matrix2 = mat2;
+			matrix1 = new float[mat2.length][mat2[0].length];
+			for(int i=0;i<mat2.length;i++){
+				for(int j=0;j<mat2[0].length;j++)
+					matrix1[i][j] = mat1[i][0];
+			}
+		}
+		else if(mat2[0].length==1 && mat1.length==mat2.length){
+			matrix1 = mat1;
+			matrix2 = new float[mat1.length][mat1[0].length];
+			for(int i=0;i<mat1.length;i++){
+				for(int j=0;j<mat1[0].length;j++)
+					matrix2[i][j] = mat2[i][0];
+			}
+		}
+		else if(mat1.length!=mat2.length || mat1[0].length!=mat2[0].length)
 			throw new IncompatibleMatrixException();
-
-		matrix1 = mat1;
-		matrix2 = mat2;
+		else{
+			matrix1 = mat1;
+			matrix2 = mat2;
+		}
 
 		rows = matrix1.length;
 		cols = matrix1[0].length;
@@ -235,123 +380,6 @@ public class NumJ {
 
 		return dot;
 	}
-
-
-
-	// Matrix-Vector operations
-
-	public static float[][] add(float[][] mat1, float[] mat2) throws IncompatibleMatrixException{
-		if(mat1.length!=mat2.length && mat1[0].length!=mat2.length)
-			throw new IncompatibleMatrixException();
-
-		matrix1 = mat1;
-
-		rows = matrix1.length;
-		cols = matrix1[0].length;
-		result = new float[rows][cols];
-
-		if(mat2.length==cols){
-			matrix2 = new float[rows][cols];
-			for(int i=0;i<rows;i++)
-				matrix2[i] = mat2;
-		}
-		else{
-			matrix2 = new float[cols][rows];
-			for(int i=0;i<cols;i++)
-				matrix2[i] = mat2;
-			matrix2 = transpose(matrix2);
-		}
-
-		matrix1 = mat1;
-		result = add(matrix1, matrix2);
-
-		return result;
-	}
-
-	public static float[][] mul(float[][] mat1, float[] mat2) throws IncompatibleMatrixException{
-		if(mat1.length!=mat2.length && mat1[0].length!=mat2.length)
-			throw new IncompatibleMatrixException();
-
-		matrix1 = mat1;
-
-		rows = matrix1.length;
-		cols = matrix1[0].length;
-		result = new float[rows][cols];
-
-		if(mat2.length==rows){
-			matrix2 = new float[cols][rows];
-			for(int i=0;i<cols;i++)
-				matrix2[i] = mat2;
-			matrix2 = transpose(matrix2);
-		}
-		else{
-			matrix2 = new float[rows][cols];
-			for(int i=0;i<rows;i++)
-				matrix2[i] = mat2;
-		}
-
-		matrix1 = mat1;
-		result = mul(matrix1, matrix2);
-
-		return result;
-	}
-
-	public static float[][] div(float[][] mat1, float[] mat2) throws IncompatibleMatrixException{
-		if(mat1.length!=mat2.length && mat1[0].length!=mat2.length)
-			throw new IncompatibleMatrixException();
-
-		matrix1 = mat1;
-
-		rows = matrix1.length;
-		cols = matrix1[0].length;
-		result = new float[rows][cols];
-
-		if(mat2.length==rows){
-			matrix2 = new float[cols][rows];
-			for(int i=0;i<cols;i++)
-				matrix2[i] = mat2;
-			matrix2 = transpose(matrix2);
-		}
-		else{
-			matrix2 = new float[rows][cols];
-			for(int i=0;i<rows;i++)
-				matrix2[i] = mat2;
-		}
-
-		matrix1 = mat1;
-		result = div(matrix1, matrix2);
-
-		return result;
-	}
-
-	public static float[][] sub(float[][] mat1, float[] mat2) throws IncompatibleMatrixException{
-		if(mat1.length!=mat2.length && mat1[0].length!=mat2.length)
-			throw new IncompatibleMatrixException();
-
-		matrix1 = mat1;
-
-		rows = matrix1.length;
-		cols = matrix1[0].length;
-		result = new float[rows][cols];
-
-		if(mat2.length==cols){
-			matrix2 = new float[rows][cols];
-			for(int i=0;i<rows;i++)
-				matrix2[i] = mat2;
-		}
-		else{
-			matrix2 = new float[cols][rows];
-			for(int i=0;i<cols;i++)
-				matrix2[i] = mat2;
-			matrix2 = transpose(matrix2);
-		}
-
-		matrix1 = mat1;
-		result = sub(matrix1, matrix2);
-
-		return result;
-	}
-
 
 
 	// Matrix-Scalar operations
@@ -525,7 +553,7 @@ public class NumJ {
 		return s;
 	}
 
-	public static float[] sum(float[][] mat, int axis) {
+	public static float[][] sum(float[][] mat, int axis) {
 		if(axis==1)
 			matrix1 = mat;
 		else if(axis==0)
@@ -552,13 +580,16 @@ public class NumJ {
 			}
 		}
 
+		result = new float[1][tempRow.length];
+		result[0] = tempRow;	
+
 		// long end = System.nanoTime();
 		// double time = (end-start)/1000000.0;
 
 		// System.out.println("Sum: " + s);
 		// System.out.println("Computation took " + time + " milliseconds.");
 
-		return tempRow;
+		return result;
 	}
 
 	public static float avg(float[][] mat) {
@@ -567,11 +598,11 @@ public class NumJ {
 		return av;
 	}
 
-	public static float[] avg(float[][] mat, int axis) {
-		float[] temp = sum(mat, axis);
+	public static float[][] avg(float[][] mat, int axis) {
+		float[][] temp = sum(mat, axis);
 		int n = axis==0 ? mat.length : mat[0].length;
 		for(int i=0;i<temp.length;i++)
-			temp[i] /= n;
+			temp[0][i] /= n;
 		return temp;
 	}
 
@@ -612,6 +643,45 @@ public class NumJ {
 		// System.out.println("Computation took " + time + " milliseconds.");
 
 		return m;
+	}
+
+	public static float[][] max(float[][] mat, int axis) {
+		if(axis==1)
+			matrix1 = mat;
+		else if(axis==0)
+			matrix1 = transpose(mat);
+
+		rows = matrix1.length;
+		cols = matrix1[0].length;
+
+		tempRow = new float[rows];
+
+		threadPool = new Thread[rows];
+		// long start = System.nanoTime();
+
+		for(int i=0; i<rows; i++){
+			threadPool[i] = new Thread(new ScalarThread(i, 2));
+			threadPool[i].start();
+		}
+		
+		for(int i=0; i<rows; i++){	
+			try{
+				threadPool[i].join();
+			}catch (InterruptedException e){
+				// System.out.println(e);
+			}
+		}
+
+		// long end = System.nanoTime();
+		// double time = (end-start)/1000000.0;
+
+		// System.out.println("Max: " + m);
+		// System.out.println("Computation took " + time + " milliseconds.");
+
+		float[][] temp = new float[1][rows];
+		temp[0] = tempRow;
+
+		return temp;
 	}
 
 	public static int[] argmax(float[][] mat) {
@@ -657,6 +727,45 @@ public class NumJ {
 		return pos;
 	}
 
+	public static int[] argmax(float[][] mat, int axis) {
+		if(axis==1)
+			matrix1 = mat;
+		else if(axis==0)
+			matrix1 = transpose(mat);
+
+		rows = matrix1.length;
+		cols = matrix1[0].length;
+
+		int[] pos = new int[rows];
+		tempRow = new float[rows];
+
+		threadPool = new Thread[rows];
+		// long start = System.nanoTime();
+
+		for(int i=0; i<rows; i++){
+			threadPool[i] = new Thread(new ScalarThread(i, 3));
+			threadPool[i].start();
+		}
+		
+		for(int i=0; i<rows; i++){	
+			try{
+				threadPool[i].join();
+			}catch (InterruptedException e){
+				// System.out.println(e);
+			}
+		}
+
+		for(int i=0;i<rows;i++)
+			pos[i] = (int)tempRow[i];
+
+		// long end = System.nanoTime();
+		// double time = (end-start)/1000000.0;
+
+		// System.out.println("(" + pos[0] + ", " + pos[1] + ")");
+		// System.out.println("Computation took " + time + " milliseconds.");
+
+		return pos;
+	}
 
 
 	// Single matrix operations
@@ -691,13 +800,6 @@ public class NumJ {
 		// System.out.println("Computation took " + time + " milliseconds.");
 
 		return result;
-	}
-
-	public static float[] exp(float[] mat) {
-		float[] temp = new float[mat.length];
-		for(int i=0;i<mat.length;i++)
-			temp[i] = (float) Math.exp(mat[i]);
-		return temp;
 	}
 
 	public static float[][] transpose(float[][] mat) {
@@ -834,10 +936,10 @@ public class NumJ {
 		return result;
 	}
 
-	public static float[] ones(int size){
-		float[] temp = new float[size];
+	public static float[][] ones(int size){
+		float[][] temp = new float[1][size];
 		for(int i=0;i<size;i++)
-			temp[i] = 1.0f;
+			temp[0][i] = 1.0f;
 		return temp;
 	}
 
@@ -850,8 +952,8 @@ public class NumJ {
 		return result;
 	}
 
-	public static float[] zeros(int size){
-		return (new float[size]);
+	public static float[][] zeros(int size){
+		return (new float[1][size]);
 	}
 
 	public static float[][] rand(int x, int y){
@@ -884,21 +986,21 @@ public class NumJ {
 		return result;
 	}
 
-	public static float[] rand(int size){
-		float[] temp = new float[size];
+	public static float[][] rand(int size){
+		float[][] temp = new float[1][size];
 		for(int i=0;i<size;i++)
-			temp[i] = ((float) Math.random() * 2.0f) - 1.0f;
+			temp[0][i] = ((float) Math.random() * 2.0f) - 1.0f;
 		return temp;
 	}
 
-	public static float[] flatten(float[][] mat) {
+	public static float[][] flatten(float[][] mat) {
 		cols = mat.length * mat[0].length;
 
-		float[] temp = new float[cols];
+		float[][] temp = new float[1][cols];
 		int cnt = 0;
 		for(int i=0;i<mat.length;i++){
 			for(int j=0;j<mat[0].length;j++)
-				temp[cnt++] = mat[i][j];
+				temp[0][cnt++] = mat[i][j];
 		}
 
 		return temp;
@@ -912,11 +1014,11 @@ public class NumJ {
 			return mat;
 
 		float[][] out = new float[newshape[0]][newshape[1]];
-		float[] temp = flatten(mat);
+		float[][] temp = flatten(mat);
 		int cnt = 0;
 		for(int i=0;i<newshape[0];i++){
 			for(int j=0;j<newshape[1];j++)
-				out[i][j] = temp[cnt++];
+				out[i][j] = temp[0][cnt++];
 		}
 		return out;
 	}
@@ -926,23 +1028,20 @@ public class NumJ {
 		return reshape(mat, newshape);
 	}
 
-	public static float[] reshape(float[][] mat, int newshape) throws IncompatibleMatrixException {
-		if(mat.length*mat[0].length!=newshape)
-			throw new IncompatibleMatrixException();
-		float[] temp = new float[newshape];
-		int cnt = 0;
-		for(int i=0;i<mat.length;i++){
-			for(int j=0;j<mat[0].length;j++)
-				temp[cnt++] = mat[i][j];
-		}
-		return temp;
-	}
-
 	public static int[] shape(float[][] mat) {
 		int[] s = new int[2];
 		s[0] = mat.length;
 		s[1] = mat[0].length;
 		return s;
+	}
+
+	public static float[][] copy(float[][] mat) {
+		float[][] temp = new float[mat.length][mat[0].length];
+		for(int i=0;i<mat.length;i++){
+			for(int j=0;j<mat[0].length;j++)
+				temp[i][j] = mat[i][j];
+		}
+		return temp;
 	}
 
 	public static void display(float[][] mat) {
@@ -951,13 +1050,6 @@ public class NumJ {
 				System.out.print(mat[i][j] + " ");
 			System.out.println();
 		}
-		System.out.println();
-	}
-
-	public static void display(float[] mat) {
-		for(int i=0;i<mat.length;i++)
-			System.out.print(mat[i] + " ");
-		System.out.println();
 		System.out.println();
 	}
 
