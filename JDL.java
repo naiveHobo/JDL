@@ -1,17 +1,35 @@
+import java.util.concurrent.ThreadLocalRandom;
 import NumJ.*;
+import Dataset.*;
 
 interface Layer {
 	public float[][] forward(float[][] x);
 	public float[][] backward(float[][] d);
-	public boolean hasWeights();
 	public void updateWeights(float lr, float rs);
 	public String getName();
 	public String getType();
 }
 
+// class Dropout implements Layer {
+// 	private String name;
+// 	private String type;
+// 	private float ratio;
+// 	private int[][] mask;
+
+// 	public Dropout(String name, float ratio) {
+// 		this.name = name;
+// 		this.ratio = ratio;
+// 		this.type = "Dropout";
+// 	}
+
+// 	public float[][] forward(float[][] x) {
+// 		float[][] probs
+// 	}
+// }
+
 class Activation implements Layer {
-	public String name;
-	public String type;
+	private String name;
+	private String type;
 	private String function;
 	private float[][] output;
 
@@ -119,10 +137,6 @@ class Activation implements Layer {
 		return;
 	}
 
-	public boolean hasWeights() {
-		return false;
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -183,10 +197,6 @@ class Dense implements Layer {
 		}
 	}
 
-	public boolean hasWeights() {
-		return true;
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -197,6 +207,7 @@ class Dense implements Layer {
 }
 
 class NeuralNetwork {
+	// private float[][]
 	private float loss;
 	private float accuracy;
 	private Layer[] layers;
@@ -228,6 +239,20 @@ class NeuralNetwork {
 		return 0;
 	}
 
+	public float crossEntropyLoss(float[][] label, float[][] pred) {
+		int[] pos = new int[1];
+		try{
+			pos = NumJ.argmax(label, 1);
+		} catch(Exception e){
+			System.out.println(e);
+		}
+		loss = 0;
+		for(int i=0;i<pos.length;i++)
+			loss += (float) -Math.log(pred[i][pos[i]]);
+		loss /= pos.length;
+		return loss;
+	}
+
 	public float getAccuracy(float[][] labels, float[][] preds) {
 		accuracy = 0;
 		int[] pos_preds = NumJ.argmax(preds, 1);
@@ -253,43 +278,70 @@ class NeuralNetwork {
 		layers = temp;
 	}
 
+	public void updateWeights() {
+		for(Layer l: layers)
+			l.updateWeights(learning_rate, regularization);
+	}
+
 	public void setParameters(float lr, float rs) {
 		this.learning_rate = lr;
 		this.regularization = rs;
 	}
 
-	public void updateWeights() {
-		for(Layer l: layers) {
-			if(l.hasWeights())
-				l.updateWeights(learning_rate, regularization);
-		}
-	}
+	public void fit(float[][] train_x, float[][] train_y, int epochs, int batch_size) {
+		int train_size = train_x.length;
+		float[][] batch = new float[batch_size][train_x[0].length];
+		float[][] labels = new float[batch_size][train_y[0].length];
+		float[][] preds = new float[batch_size][train_y[0].length];
+		int[] data_pos = new int[train_size];
+		int randomPos;
 
-	public Layer getLayer(String name) {
-		for(Layer l: layers){
-			if(name.equals(l.getName()))
-				return l;
+		for(int i=0;i<epochs;i++){
+			System.out.println("\n\nEpoch " + (i+1) + ":");
+			train_size = train_x.length;
+			for(int j=0;j<train_size;j++)
+				data_pos[j] = j;
+			while(train_size>0){
+				batch_size = Math.min(batch_size, train_size);
+				if(batch_size==train_size){
+					batch = new float[batch_size][train_x[0].length];
+					labels = new float[batch_size][train_y[0].length];
+				}
+				for(int j=0;j<batch_size;j++){
+					randomPos = ThreadLocalRandom.current().nextInt(0, train_size);
+					batch[j] = train_x[data_pos[randomPos]];
+					labels[j] = train_y[data_pos[randomPos]];
+					System.arraycopy(data_pos, randomPos+1, data_pos, randomPos, data_pos.length-1-randomPos);
+					train_size--;
+				}
+				preds = predict(batch);
+				backprop(labels);
+				updateWeights();
+				for(int j=0;j<(batch_size*50)/train_x.length;j++)
+					System.out.print(">");
+			}
+			// NumJ.display(preds);
+			System.out.println("\nLoss: " + crossEntropyLoss(labels, preds));
+			System.out.println("Accuracy: " + getAccuracy(labels, preds));
 		}
-		return null;
 	}
 }
 
 public class JDL {
 	public static void main(String args[]) {
 		NeuralNetwork nn = new NeuralNetwork();
-		nn.addLayer(new Dense("Dense1", 3, 4));
-		nn.addLayer(new Dense("Dense2", 4, 4));
+		nn.addLayer(new Dense("Dense1", 784, 50));
+		nn.addLayer(new Dense("Dense2", 50, 10));
 		nn.addLayer(new Activation("output", "softmax"));
-		nn.setParameters(0.01f, 0.001f);
-		float[][] x = {{1, 2, 3}};
-		float[][] t = {{0, 0, 1, 0}};
-		float[][] out;
-		for(int i=0;i<10;i++){
-			out = nn.predict(x);
-			nn.backprop(t);
-			System.out.println("\n\nEpoch " + i + "\nLoss: " + nn.meanSquaredError(t, out));
-			System.out.println("Accuracy: " + nn.getAccuracy(t, out));
-			nn.updateWeights();
-		}
+		nn.setParameters(0.001f, 0.001f);
+		float[][] train_x = new float[500][784];
+		float[][] train_y = new float[500][10];
+		MNIST.loadTrainingData(train_x, train_y, 50);
+		nn.fit(train_x, train_y, 30, 40);
+		float[][] test_x = new float[100][784];
+		float[][] test_y = new float[100][10];
+		MNIST.loadTestData(test_x, test_y, 10);
+		float[][] temp = nn.predict(test_x);
+		System.out.println(nn.getAccuracy(test_y, temp));
 	}
 }

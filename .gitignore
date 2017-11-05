@@ -1,3 +1,4 @@
 Test.java
 Test.class
-Data/mnist/
+Dataset/training/
+Dataset/testing/
