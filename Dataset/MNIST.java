@@ -1,5 +1,6 @@
 package Dataset;
 
+import java.util.concurrent.ThreadLocalRandom;
 import java.io.*;
 import java.util.*;
 import java.awt.image.BufferedImage;
@@ -49,6 +50,25 @@ public class MNIST {
 					break;
 			}
 		}
+	}
+
+	public static String randomImage() {
+		File folder = new File("Dataset/testing");
+		int cnt = 0;
+		for (final File fileEntry : folder.listFiles()) {
+			for (final File image_file : fileEntry.listFiles())
+				cnt++;
+		}
+		int randomNum = ThreadLocalRandom.current().nextInt(0, cnt);
+		cnt = 0;
+		for (final File fileEntry : folder.listFiles()) {
+			for (final File image_file : fileEntry.listFiles()){
+				if(cnt==randomNum)
+					return ("Dataset/" + folder.getName() + "/" + fileEntry.getName() + "/" + image_file.getName());
+				cnt++;
+			}
+		}
+		return "Dataset/testing/0/3.png";
 	}
 
 	public static float[] imageToMatrix(BufferedImage image) {

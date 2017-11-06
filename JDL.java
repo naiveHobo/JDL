@@ -1,6 +1,17 @@
 import java.util.concurrent.ThreadLocalRandom;
 import NumJ.*;
 import Dataset.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
+import java.awt.*;
+import java.awt.event.*;
 
 interface Layer {
 	public float[][] forward(float[][] x);
@@ -295,10 +306,16 @@ class NeuralNetwork {
 		float[][] preds = new float[batch_size][train_y[0].length];
 		int[] data_pos = new int[train_size];
 		int randomPos;
+		float comp = 0;
+		int p;
+
+		System.out.println("Commencing training...");
 
 		for(int i=0;i<epochs;i++){
 			System.out.println("\n\nEpoch " + (i+1) + ":");
 			train_size = train_x.length;
+			comp = 0;
+			p = 0;
 			for(int j=0;j<train_size;j++)
 				data_pos[j] = j;
 			while(train_size>0){
@@ -317,14 +334,88 @@ class NeuralNetwork {
 				preds = predict(batch);
 				backprop(labels);
 				updateWeights();
-				for(int j=0;j<(batch_size*50)/train_x.length;j++)
+				comp += ((batch_size*50.0f)/train_x.length);
+				for(;p<comp;p++)
 					System.out.print(">");
 			}
-			// NumJ.display(preds);
 			System.out.println("\nLoss: " + crossEntropyLoss(labels, preds));
 			System.out.println("Accuracy: " + getAccuracy(labels, preds));
 		}
 	}
+}
+
+class Test extends Frame implements WindowListener, ActionListener {
+	Button genImg;
+	Button genPred;
+	JLabel label;
+	JLabel text;
+	NeuralNetwork nn;
+	float[][] img;
+	float[][] prediction;
+	private String IMG_PATH;
+
+	public Test(String title, NeuralNetwork nn) {
+		super(title);
+		this.nn = nn;
+		img = new float[1][784];
+		prediction = new float[1][10];
+		setLayout(new FlowLayout());
+		addWindowListener(this);
+		IMG_PATH = MNIST.randomImage();
+		genImg = new Button("Random Image");
+		genPred = new Button("Predict");
+		add(genImg);
+		add(genPred);
+		try {
+			label = new JLabel(new ImageIcon(ImageIO.read(new File(IMG_PATH))));
+			add(label);
+		} catch(IOException e){
+			System.out.println(e);
+		}
+		text = new JLabel("\nPrediction: ");
+		add(text);
+
+		genImg.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				IMG_PATH = MNIST.randomImage();
+				try {
+					label.setIcon(new ImageIcon(ImageIO.read(new File(IMG_PATH))));
+				} catch(IOException ex){
+					System.out.println(ex);
+				}
+				revalidate();
+				repaint();
+			}
+		});
+
+		genPred.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try{
+					img[0] = MNIST.imageToMatrix(ImageIO.read(new File(IMG_PATH)));
+				} catch(IOException ex){
+					System.out.println(ex);
+				}
+				prediction = nn.predict(img);
+				text.setText("\nPrediction: " + NumJ.argmax(prediction)[1]);
+				revalidate();
+				repaint();
+			}
+		});
+	}
+
+	public void windowClosing(WindowEvent e) {
+		dispose();
+		System.exit(0);
+	}
+
+	public void actionPerformed(ActionEvent e) {}
+	public void windowOpened(WindowEvent e) {}
+	public void windowActivated(WindowEvent e) {}
+	public void windowIconified(WindowEvent e) {}
+	public void windowDeiconified(WindowEvent e) {}
+	public void windowDeactivated(WindowEvent e) {}
+	public void windowClosed(WindowEvent e) {}
+
 }
 
 public class JDL {
@@ -337,11 +428,16 @@ public class JDL {
 		float[][] train_x = new float[500][784];
 		float[][] train_y = new float[500][10];
 		MNIST.loadTrainingData(train_x, train_y, 50);
-		nn.fit(train_x, train_y, 30, 40);
-		float[][] test_x = new float[100][784];
-		float[][] test_y = new float[100][10];
-		MNIST.loadTestData(test_x, test_y, 10);
-		float[][] temp = nn.predict(test_x);
-		System.out.println(nn.getAccuracy(test_y, temp));
+		System.out.println("Succesfully loaded training data!\n");
+		nn.fit(train_x, train_y, 2, 40);
+		System.out.println("\nSuccesfully trained the model!\n");
+		// float[][] test_x = new float[100][784];
+		// float[][] test_y = new float[100][10];
+		// MNIST.loadTestData(test_x, test_y, 10);
+		// float[][] temp = nn.predict(test_x);
+		// System.out.println(nn.getAccuracy(test_y, temp));
+		Test myWindow = new Test("Neural Network Tester", nn);
+		myWindow.setSize(350,100);
+		myWindow.setVisible(true);
 	}
 }
