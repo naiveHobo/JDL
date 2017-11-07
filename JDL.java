@@ -6,12 +6,10 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.*;
 
 interface Layer {
 	public float[][] forward(float[][] x);
@@ -342,44 +340,168 @@ class NeuralNetwork {
 			System.out.println("Accuracy: " + getAccuracy(labels, preds));
 		}
 	}
+
+	public void summary() {
+		System.out.println("\nModel:");
+		for(Layer l: layers)
+			System.out.println("\n" + l.getName() + ": " + l.getType());
+	}	
 }
 
-class Test extends Frame implements WindowListener, ActionListener {
-	Button genImg;
-	Button genPred;
-	JLabel label;
-	JLabel text;
-	NeuralNetwork nn;
-	float[][] img;
-	float[][] prediction;
-	private String IMG_PATH;
-
-	public Test(String title, NeuralNetwork nn) {
-		super(title);
-		this.nn = nn;
-		img = new float[1][784];
-		prediction = new float[1][10];
+class Paint extends JFrame {
+	JPanel canvas;
+	JButton save;
+	JButton clear;
+	int prevX, prevY;
+	boolean dragging;
+	BufferedImage image;
+	Graphics g;
+	
+	public Paint(Test temp) {
+		super("Canvas");
+		setSize(150, 200);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(new FlowLayout());
+
+		image = new BufferedImage(150, 150, BufferedImage.TYPE_INT_ARGB);
+		g = image.getGraphics();
+		g.setColor(Color.BLACK);
+		g.fillRect(0, 0, 150, 150);
+
+		canvas = new JPanel();
+		canvas.setPreferredSize(new Dimension(150, 150));
+		canvas.setBackground(Color.BLACK);
+		
+		save = new JButton("Save");
+		clear = new JButton("Clear");
+		
+		add(canvas);
+		add(save);
+		add(clear);
+
+		canvas.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent evt) {
+				int x = evt.getX();
+				int y = evt.getY();
+
+				if (dragging == true)
+					return;
+
+				prevX = x;
+				prevY = y;
+				dragging = true;
+			}
+
+			public void mouseReleased(MouseEvent evt) {
+				if (dragging == false)
+					return;
+				dragging = false;
+			}
+		});
+
+		canvas.addMouseMotionListener(new MouseAdapter() {
+			public void mouseDragged(MouseEvent evt) {
+
+				if (dragging == false)
+					return;
+
+				int x = evt.getX();
+				int y = evt.getY();
+
+				Graphics2D g2d = (Graphics2D) canvas.getGraphics();
+				g2d.setStroke(new BasicStroke(9));
+				g2d.setColor(Color.WHITE);
+				g2d.drawLine(prevX, prevY, x, y);
+
+				g2d = (Graphics2D) image.getGraphics();
+				g2d.setStroke(new BasicStroke(9));
+				g2d.setColor(Color.WHITE);
+				g2d.drawLine(prevX, prevY, x, y);
+
+				prevX = x;
+				prevY = y;
+			}
+		});
+
+		save.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				// try {
+				// 	if (ImageIO.write(image, "png", new File("./output_image.png")))
+				// 		System.out.println("-- saved");
+				// } catch(IOException exp) {
+				// 	exp.printStackTrace();
+				// }
+				temp.setImage(image);
+				dispose();
+			}
+		});
+
+		clear.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				g = image.getGraphics();
+				g.setColor(Color.BLACK);
+				g.fillRect(0, 0, 150, 150);
+				g = canvas.getGraphics();
+				g.setColor(Color.BLACK);
+				g.fillRect(0, 0, 150, 150);
+			}
+		});
+	}
+}
+
+class Test extends JFrame implements WindowListener {
+	JPanel imageholder;
+	JButton generate;
+	JButton predict;
+	JButton draw;
+	JLabel dispImage;
+	JLabel prediction;
+	JLabel confidence;
+	NeuralNetwork nn;
+	float[][] input;
+	float[][] output;
+	BufferedImage image;
+
+	public Test(NeuralNetwork nn) {
+		super("Neural Network Tester");
+		this.nn = nn;
+		input = new float[1][784];
+		output = new float[1][10];
+
+		setSize(300, 200);
+		setLayout(new GridLayout(3, 2));
 		addWindowListener(this);
-		IMG_PATH = MNIST.randomImage();
-		genImg = new Button("Random Image");
-		genPred = new Button("Predict");
-		add(genImg);
-		add(genPred);
+
+		imageholder = new JPanel();
+		generate = new JButton("Random");
+		predict = new JButton("Predict");
+		draw = new JButton("Draw");
+		prediction = new JLabel(" Prediction: ");
+		confidence = new JLabel(" Confidence: ");
+		dispImage = new JLabel();
+
 		try {
-			label = new JLabel(new ImageIcon(ImageIO.read(new File(IMG_PATH))));
-			add(label);
+			image = ImageIO.read(new File(MNIST.randomImage()));
+			dispImage.setIcon(new ImageIcon(MNIST.resize(image, 50, 50)));
 		} catch(IOException e){
 			System.out.println(e);
 		}
-		text = new JLabel("\nPrediction: ");
-		add(text);
 
-		genImg.addActionListener(new ActionListener() {
+		imageholder.setLayout(new FlowLayout());
+
+		add(imageholder);
+		imageholder.add(dispImage);
+		add(generate);
+		add(prediction);
+		add(predict);
+		add(confidence);
+		add(draw);
+
+		generate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				IMG_PATH = MNIST.randomImage();
 				try {
-					label.setIcon(new ImageIcon(ImageIO.read(new File(IMG_PATH))));
+					image = ImageIO.read(new File(MNIST.randomImage()));
+					dispImage.setIcon(new ImageIcon(MNIST.resize(image, 50, 50)));
 				} catch(IOException ex){
 					System.out.println(ex);
 				}
@@ -388,19 +510,31 @@ class Test extends Frame implements WindowListener, ActionListener {
 			}
 		});
 
-		genPred.addActionListener(new ActionListener() {
+		predict.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				try{
-					img[0] = MNIST.imageToMatrix(ImageIO.read(new File(IMG_PATH)));
-				} catch(IOException ex){
-					System.out.println(ex);
-				}
-				prediction = nn.predict(img);
-				text.setText("\nPrediction: " + NumJ.argmax(prediction)[1]);
+				input[0] = MNIST.imageToMatrix(image);
+				output = nn.predict(input);
+				int pos = NumJ.argmax(output)[1];
+				prediction.setText("     Prediction: " + pos);
+				confidence.setText(" Confidence: " + (int)(output[0][pos]*10000)/100.0 + "%");
 				revalidate();
 				repaint();
 			}
 		});
+
+		draw.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Paint window = new Paint(Test.this);
+				window.setVisible(true);
+			}
+		});
+	}
+
+	public void setImage(BufferedImage pimg){
+		image = MNIST.resize(pimg, 28, 28);;
+		dispImage.setIcon(new ImageIcon(MNIST.resize(pimg, 50, 50)));
+		revalidate();
+		repaint();
 	}
 
 	public void windowClosing(WindowEvent e) {
@@ -408,7 +542,6 @@ class Test extends Frame implements WindowListener, ActionListener {
 		System.exit(0);
 	}
 
-	public void actionPerformed(ActionEvent e) {}
 	public void windowOpened(WindowEvent e) {}
 	public void windowActivated(WindowEvent e) {}
 	public void windowIconified(WindowEvent e) {}
@@ -424,20 +557,20 @@ public class JDL {
 		nn.addLayer(new Dense("Dense1", 784, 50));
 		nn.addLayer(new Dense("Dense2", 50, 10));
 		nn.addLayer(new Activation("output", "softmax"));
-		nn.setParameters(0.001f, 0.001f);
+		nn.setParameters(0.001f, 0.01f);
 		float[][] train_x = new float[500][784];
 		float[][] train_y = new float[500][10];
 		MNIST.loadTrainingData(train_x, train_y, 50);
 		System.out.println("Succesfully loaded training data!\n");
-		nn.fit(train_x, train_y, 2, 40);
+		nn.fit(train_x, train_y, 2, 32);
 		System.out.println("\nSuccesfully trained the model!\n");
+		nn.summary();
 		// float[][] test_x = new float[100][784];
 		// float[][] test_y = new float[100][10];
 		// MNIST.loadTestData(test_x, test_y, 10);
 		// float[][] temp = nn.predict(test_x);
 		// System.out.println(nn.getAccuracy(test_y, temp));
-		Test myWindow = new Test("Neural Network Tester", nn);
-		myWindow.setSize(350,100);
+		Test myWindow = new Test(nn);
 		myWindow.setVisible(true);
 	}
 }
